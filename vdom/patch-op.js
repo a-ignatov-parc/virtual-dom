@@ -63,7 +63,7 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
     var newNode
 
     if (domNode.nodeType === 3) {
-        domNode.replaceData(0, domNode.length, vText.text)
+        domNode.textContent = vText.text
         newNode = domNode
     } else {
         var parentNode = domNode.parentNode
@@ -126,7 +126,7 @@ function reorderChildren(domNode, moves) {
 
     for (var i = 0; i < moves.removes.length; i++) {
         remove = moves.removes[i]
-        node = childNodes[remove.from]
+        node = childNodes.item(remove.from)
         if (remove.key) {
             keyMap[remove.key] = node
         }
@@ -138,7 +138,7 @@ function reorderChildren(domNode, moves) {
         insert = moves.inserts[j]
         node = keyMap[insert.key]
         // this is the weirdest bug i've ever seen in webkit
-        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes.item(insert.to))
     }
 }
 

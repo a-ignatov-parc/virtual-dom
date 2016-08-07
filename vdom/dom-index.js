@@ -40,7 +40,7 @@ function recurse(rootNode, tree, indices, nodes, rootIndex) {
 
                 // skip recursion down the tree if there are no nodes down here
                 if (indexInRange(indices, rootIndex, nextIndex)) {
-                    recurse(childNodes[i], vChild, indices, nodes, rootIndex)
+                    recurse(childNodes.item(i), vChild, indices, nodes, rootIndex)
                 }
 
                 rootIndex = nextIndex
