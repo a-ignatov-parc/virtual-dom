@@ -50,5 +50,5 @@ function parseTag(tag, props) {
         props.className = classes.join(' ');
     }
 
-    return props.namespace ? tagName : tagName.toUpperCase();
+    return props.namespace || props.tvml ? tagName : tagName.toUpperCase();
 }

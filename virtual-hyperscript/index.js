@@ -11,8 +11,9 @@ var isHook = require('../vnode/is-vhook');
 var isVThunk = require('../vnode/is-thunk');
 
 var parseTag = require('./parse-tag.js');
-var softSetHook = require('./hooks/soft-set-hook.js');
 var evHook = require('./hooks/ev-hook.js');
+
+var tvmlCumulativeTypes = ['string', 'number'];
 
 module.exports = h;
 
@@ -40,26 +41,6 @@ function h(tagName, properties, children) {
         props.namespace = undefined;
     }
 
-    // fix cursor bug
-    if (tag === 'INPUT' &&
-        !namespace &&
-        props.hasOwnProperty('value') &&
-        props.value !== undefined &&
-        !isHook(props.value)
-    ) {
-        if (props.value !== null && typeof props.value !== 'string') {
-            throw UnsupportedValueType({
-                expected: 'String',
-                received: typeof props.value,
-                Vnode: {
-                    tagName: tag,
-                    properties: props
-                }
-            });
-        }
-        props.value = softSetHook(props.value);
-    }
-
     transformProperties(props);
 
     if (children !== undefined && children !== null) {
@@ -78,6 +59,21 @@ function addChild(c, childNodes, tag, props) {
     } else if (isChild(c)) {
         childNodes.push(c);
     } else if (isArray(c)) {
+        c = c.reduce(function(result, item, i) {
+            // Processing tvml special case when multiple TextNodes always merged into one and this
+            // behaviour breaks virtual-dom diff mechanism.
+            if (i && ~tvmlCumulativeTypes.indexOf(typeof(item)) && typeof(result[result.length - 1]) === 'string') {
+                result[result.length - 1] += '' + item;
+            } else if (typeof(item) !== 'boolean') {
+                // Numbers always should be added as strings.
+                if (typeof(item) === 'number') {
+                    item += '';
+                }
+                result.push(item);
+            }
+            return result;
+        }, []);
+
         for (var i = 0; i < c.length; i++) {
             addChild(c[i], childNodes, tag, props);
         }
@@ -134,25 +130,6 @@ function UnexpectedVirtualElement(data) {
         'Suggested fix: change your `h(..., [ ... ])` callsite.';
     err.foreignObject = data.foreignObject;
     err.parentVnode = data.parentVnode;
-
-    return err;
-}
-
-function UnsupportedValueType(data) {
-    var err = new Error();
-
-    err.type = 'virtual-hyperscript.unsupported.value-type';
-    err.message = 'Unexpected value type for input passed to h().\n' +
-        'Expected a ' +
-        errorString(data.expected) +
-        ' but got:\n' +
-        errorString(data.received) +
-        '.\n' +
-        'The vnode is:\n' +
-        errorString(data.Vnode)
-        '\n' +
-        'Suggested fix: Cast the value passed to h() to a string using String(value).';
-    err.Vnode = data.Vnode;
 
     return err;
 }
