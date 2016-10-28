@@ -4,6 +4,7 @@ var isWidget = require("../vnode/is-widget.js")
 var VPatch = require("../vnode/vpatch.js")
 
 var updateWidget = require("./update-widget")
+var getChildNode = require("./childnodes")
 
 module.exports = applyPatch
 
@@ -63,7 +64,11 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
     var newNode
 
     if (domNode.nodeType === 3) {
-        domNode.textContent = vText.text
+        if (typeof(domNode.replaceData) === 'function') {
+            domNode.replaceData(0, domNode.length, vText.text)
+        } else {
+            domNode.textContent = vText.text
+        }
         newNode = domNode
     } else {
         var parentNode = domNode.parentNode
@@ -126,7 +131,7 @@ function reorderChildren(domNode, moves) {
 
     for (var i = 0; i < moves.removes.length; i++) {
         remove = moves.removes[i]
-        node = childNodes.item(remove.from)
+        node = getChildNode(childNodes, remove.from)
         if (remove.key) {
             keyMap[remove.key] = node
         }
@@ -138,7 +143,7 @@ function reorderChildren(domNode, moves) {
         insert = moves.inserts[j]
         node = keyMap[insert.key]
         // this is the weirdest bug i've ever seen in webkit
-        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes.item(insert.to))
+        domNode.insertBefore(node, insert.to >= length++ ? null : getChildNode(childNodes, insert.to))
     }
 }
 

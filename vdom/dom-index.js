@@ -4,6 +4,8 @@
 // We only recurse into a DOM node if we know that it contains a child of
 // interest.
 
+var getChildNode = require("./childnodes")
+
 var noChild = {}
 
 module.exports = domIndex
@@ -40,7 +42,7 @@ function recurse(rootNode, tree, indices, nodes, rootIndex) {
 
                 // skip recursion down the tree if there are no nodes down here
                 if (indexInRange(indices, rootIndex, nextIndex)) {
-                    recurse(childNodes.item(i), vChild, indices, nodes, rootIndex)
+                    recurse(getChildNode(childNodes, i), vChild, indices, nodes, rootIndex)
                 }
 
                 rootIndex = nextIndex
