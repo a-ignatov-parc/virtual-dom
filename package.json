@@ -1,6 +1,6 @@
 {
   "name": "@a-ignatov-parc/virtual-dom",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A batched diff-based DOM rendering strategy with tvml support",
   "keywords": [
     "virtual",
