@@ -14,6 +14,8 @@ var parseTag = require('./parse-tag.js');
 var softSetHook = require('./hooks/soft-set-hook.js');
 var evHook = require('./hooks/ev-hook.js');
 
+var tvmlCumulativeTypes = ['string', 'number'];
+
 module.exports = h;
 
 function h(tagName, properties, children) {
@@ -43,6 +45,7 @@ function h(tagName, properties, children) {
     // fix cursor bug
     if (tag === 'INPUT' &&
         !namespace &&
+        !props.tvml &&
         props.hasOwnProperty('value') &&
         props.value !== undefined &&
         !isHook(props.value)
@@ -78,6 +81,23 @@ function addChild(c, childNodes, tag, props) {
     } else if (isChild(c)) {
         childNodes.push(c);
     } else if (isArray(c)) {
+        if (props.tvml) {
+            c = c.reduce(function(result, item, i) {
+                // Processing tvml special case when multiple TextNodes always merged into one and this
+                // behaviour breaks virtual-dom diff mechanism.
+                if (i && ~tvmlCumulativeTypes.indexOf(typeof(item)) && typeof(result[result.length - 1]) === 'string') {
+                    result[result.length - 1] += '' + item;
+                } else if (typeof(item) !== 'boolean') {
+                    // Numbers always should be added as strings.
+                    if (typeof(item) === 'number') {
+                        item += '';
+                    }
+                    result.push(item);
+                }
+                return result;
+            }, []);
+        }
+
         for (var i = 0; i < c.length; i++) {
             addChild(c[i], childNodes, tag, props);
         }

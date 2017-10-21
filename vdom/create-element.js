@@ -16,7 +16,7 @@ function createElement(vnode, opts) {
     vnode = handleThunk(vnode).a
 
     if (isWidget(vnode)) {
-        return vnode.init()
+        return vnode.init(opts)
     } else if (isVText(vnode)) {
         return doc.createTextNode(vnode.text)
     } else if (!isVNode(vnode)) {
