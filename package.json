@@ -1,7 +1,7 @@
 {
-  "name": "virtual-dom",
+  "name": "@a-ignatov-parc/virtual-dom",
   "version": "2.1.1",
-  "description": "A batched diff-based DOM rendering strategy",
+  "description": "A batched diff-based DOM rendering strategy with tvml support",
   "keywords": [
     "virtual",
     "dom",
@@ -12,17 +12,16 @@
     "browser"
   ],
   "author": "Matt-Esch <matt@mattesch.info>",
-  "repository": "git://github.com/Matt-Esch/virtual-dom.git",
+  "repository": "git://github.com/a-ignatov-parc/virtual-dom.git",
   "main": "index",
-  "homepage": "https://github.com/Matt-Esch/virtual-dom",
+  "homepage": "https://github.com/a-ignatov-parc/virtual-dom",
   "contributors": [
-    {
-      "name": "Matt-Esch"
-    }
+    "Matt-Esch <matt@mattesch.info>",
+    "Anton Ignatov <abietis@gmail.com>"
   ],
   "bugs": {
-    "url": "https://github.com/Matt-Esch/virtual-dom/issues",
-    "email": "matt@mattesch.info"
+    "url": "https://github.com/a-ignatov-parc/virtual-dom/issues",
+    "email": "abietis@gmail.com"
   },
   "dependencies": {
     "browser-split": "0.0.1",
